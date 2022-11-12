@@ -1,9 +1,11 @@
 import { faker } from '.';
 import { bind, bindModules } from './bind';
+import type { Datatype } from './datatype';
 import { bindDatatypeModule, datatypeFns } from './datatype';
 import { numberFn } from './datatype/number';
 import { fakerCore } from './fakerCore';
 import { forkable } from './forkable';
+import type { Helpers } from './helpers';
 import { helpersFns } from './helpers';
 import { fakerPerson } from './person';
 import { fakerFirstName } from './person/firstname';
@@ -15,16 +17,20 @@ console.log(firstName, firstName2, firstName3);
 
 faker.fork().fork().person.firstName();
 
+// Custom
+
 const fDataType = forkable(fakerCore, bindDatatypeModule);
-fDataType.fork().fork().number();
+console.log(fDataType.fork().fork().number());
 
 const fNumber = forkable(fakerCore, (core) => bind(core, numberFn));
-
 console.log(fNumber.fork().fork()());
 
-const subSet = bindModules(fakerCore, {
-  datatype: datatypeFns,
-  helpers: helpersFns,
-});
+const subSet = bindModules<{ datatype: Datatype; helpers: Helpers }>(
+  fakerCore,
+  {
+    datatype: datatypeFns,
+    helpers: helpersFns,
+  }
+);
 
 console.log(subSet.datatype.number());

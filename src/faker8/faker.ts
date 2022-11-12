@@ -30,6 +30,6 @@ export type Faker = Forkable<FakerModules>;
  */
 export function bindFaker(fakerCore: LocalizedFakerCore): Faker {
   return forkable(fakerCore, (core) =>
-    bindModules<LocalizedFakerCore, FakerModules>(core, fnsModules)
+    bindModules<FakerModules>(core, fnsModules)
   );
 }

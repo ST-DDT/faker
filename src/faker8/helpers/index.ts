@@ -36,7 +36,7 @@ export type Helpers = {
  * @param fakerCore The faker instance to bind the module to.
  */
 export function bindHelpersModule(fakerCore: FakerCore): Helpers {
-  return bindModule<FakerCore, Helpers>(fakerCore, helpersFns);
+  return bindModule<Helpers>(fakerCore, helpersFns);
 }
 
 // Either

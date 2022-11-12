@@ -14,9 +14,9 @@ import { arrayElementFn } from '../helpers/arrayElement';
  * @see fakerFirstName
  *
  * @example
- * firstNameFn(faker) // 'Antwan'
- * firstNameFn(faker, 'female') // 'Victoria'
- * firstNameFn(faker, 'male') // 'Tom'
+ * firstNameFn(fakerCore) // 'Antwan'
+ * firstNameFn(fakerCore, 'female') // 'Victoria'
+ * firstNameFn(fakerCore, 'male') // 'Tom'
  *
  * @since 8.0.0
  */

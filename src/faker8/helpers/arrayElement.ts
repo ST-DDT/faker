@@ -11,7 +11,7 @@ import { fakerCore } from '../fakerCore';
  * @param values The array to pick the value from.
  *
  * @example
- * fakerArrayElement(['cat', 'dog', 'mouse']) // 'dog'
+ * fakerArrayElement(fakerCore, ['cat', 'dog', 'mouse']) // 'dog'
  *
  * @since 8.0.0
  */

@@ -44,7 +44,7 @@ export type Datatype = {
  * @param fakerCore The faker core to bind the module to.
  */
 export function bindDatatypeModule(fakerCore: FakerCore): Datatype {
-  return bindModule<FakerCore, Datatype>(fakerCore, datatypeFns);
+  return bindModule<Datatype>(fakerCore, datatypeFns);
 }
 
 // Either

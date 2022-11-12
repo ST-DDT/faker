@@ -1,4 +1,4 @@
-import type { FakerCore } from './fakerCore';
+import type { FakerCore, LocalizedFakerCore } from './fakerCore';
 
 type FakerFunction = (...args: any[]) => unknown;
 type FakerModule = Record<string, FakerFunction>;
@@ -30,7 +30,7 @@ type FakerFnModules<C extends FakerCore, M extends FakerModules> = {
  * @param fn The function to bind.
  *
  * @example
- * const firstNameFunction = bind(fakerCore, fistNameFn);
+ * const customFunction = bind(fakerCore, arrayElementFn);
  *
  * @since 8.0.0
  */
@@ -48,11 +48,19 @@ export function bind<C extends FakerCore, P extends any[], R>(
  * @param module The module to bind.
  *
  * @example
- * const nameModule = bindModule(fakerCore, nameFns);
+ * const customModule = bindModule<Datatype>(fakerCore, datatypeFns);
  *
  * @since 8.0.0
  */
-export function bindModule<C extends FakerCore, M extends FakerModule>(
+export function bindModule<M extends FakerModule>(
+  fakerCore: FakerCore,
+  module: FakerFnModule<FakerCore, M>
+): M;
+export function bindModule<M extends FakerModule>(
+  fakerCore: LocalizedFakerCore,
+  module: FakerFnModule<LocalizedFakerCore, M>
+): M;
+export function bindModule<M extends FakerModule, C extends FakerCore>(
   fakerCore: C,
   module: FakerFnModule<C, M>
 ): M {
@@ -70,17 +78,25 @@ export function bindModule<C extends FakerCore, M extends FakerModule>(
  * @param modules The modules to bind.
  *
  * @example
- * const customModules = bindModules(fakerCore, { name: nameFns });
+ * const customModules = bindModules<{ datatype: Datatype }>(fakerCore, { datatype: datatypeFns });
  *
  * @since 8.0.0
  */
-export function bindModules<C extends FakerCore, M extends FakerModules>(
-  fakerCore: C,
-  modules: FakerFnModules<C, M>
-): M {
+export function bindModules<Modules extends FakerModules>(
+  fakerCore: FakerCore,
+  modules: FakerFnModules<FakerCore, Modules>
+): Modules;
+export function bindModules<Modules extends FakerModules>(
+  fakerCore: LocalizedFakerCore,
+  modules: FakerFnModules<LocalizedFakerCore, Modules>
+): Modules;
+export function bindModules<
+  Modules extends FakerModules,
+  Core extends FakerCore
+>(fakerCore: Core, modules: FakerFnModules<Core, Modules>): Modules {
   return Object.fromEntries(
     Object.entries(modules).map(([key, value]) => {
       return [key, bindModule(fakerCore, value)];
     })
-  ) as M;
+  ) as Modules;
 }

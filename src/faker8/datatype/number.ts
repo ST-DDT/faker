@@ -14,10 +14,10 @@ import { fakerCore } from '../fakerCore';
  * @throws When options define `max < min`.
  *
  * @example
- * faker.datatype.number() // 55422
- * faker.datatype.number({ min: 1000000 }) // 1031433
- * faker.datatype.number({ max: 100 }) // 42
- * faker.datatype.number({ min: 10, max: 100}) // 36
+ * numberFn(fakerCore) // 55422
+ * numberFn(fakerCore, { min: 1000000 }) // 1031433
+ * numberFn(fakerCore, { max: 100 }) // 42
+ * numberFn(fakerCore, { min: 10, max: 100}) // 36
  *
  * @since 8.0.0
  */
@@ -42,11 +42,11 @@ export function numberFn(
  * @throws When options define `max < min`.
  *
  * @example
- * faker.datatype.number() // 55422
- * faker.datatype.number(100) // 52
- * faker.datatype.number({ min: 1000000 }) // 1031433
- * faker.datatype.number({ max: 100 }) // 42
- * faker.datatype.number({ min: 10, max: 100}) // 36
+ * fakerNumber() // 55422
+ * fakerNumber(100) // 52
+ * fakerNumber({ min: 1000000 }) // 1031433
+ * fakerNumber({ max: 100 }) // 42
+ * fakerNumber({ min: 10, max: 100}) // 36
  *
  * @since 8.0.0
  */

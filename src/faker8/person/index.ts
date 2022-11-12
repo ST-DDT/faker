@@ -41,7 +41,7 @@ export type Person = Readonly<{
  * @param fakerCore The faker core to bind the module to.
  */
 export function bindPersonModule(fakerCore: LocalizedFakerCore): Person {
-  return bindModule<LocalizedFakerCore, Person>(fakerCore, personFns);
+  return bindModule<Person>(fakerCore, personFns);
 }
 
 // Either

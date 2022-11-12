@@ -1,5 +1,6 @@
 import type { LocaleDefinition } from 'src';
 import en from '../locales/en';
+import enPerson from '../locales/en/person';
 import type { Mersenne } from './mersenne';
 import { default as newMersenne } from './mersenne';
 
@@ -28,13 +29,13 @@ export function createFakerCore(mersenne?: Mersenne): FakerCore {
 }
 
 export function createLocalizedFakerCore(
-  definitions: LocaleDefinition,
+  definitions: Partial<LocaleDefinition>,
   mersenne?: Mersenne
 ): LocalizedFakerCore {
   mersenne = mersenne ?? newMersenne();
   return {
     mersenne,
-    definitions,
+    definitions: definitions as unknown as LocaleDefinition,
     fork: () => createLocalizedFakerCore(definitions, mersenne.fork()),
     derive: () => createLocalizedFakerCore(definitions, mersenne.derive()),
   };
@@ -44,3 +45,7 @@ const mersenne = newMersenne();
 
 export const fakerCore = createFakerCore(mersenne);
 export const localizedFakerCore = createLocalizedFakerCore(en, mersenne);
+export const personFakerCore = createLocalizedFakerCore(
+  { person: enPerson },
+  mersenne
+);
