@@ -88,6 +88,8 @@ describe('BROKEN_LOCALE_METHODS test', () => {
       (module) => !existingModules.includes(module)
     );
 
+    // This doesn't matter
+
     expect(obsoleteModules, 'No obsolete configuration').toEqual([]);
   });
 
