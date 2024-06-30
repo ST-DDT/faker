@@ -47,6 +47,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch --tags
           if [ $RELEASE_TYPE = 'stable' ]; then
             pnpm run release
           else
