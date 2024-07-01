@@ -1,3 +1,5 @@
+DIFF
+
 <div align="center">
   <img src="./docs/public/logo.svg" width="200"/>
   <h1>Faker</h1>
