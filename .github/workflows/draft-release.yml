@@ -1,16 +1,20 @@
 name: Draft Release
 
 on:
-  push:
-    branches:
-      - next
+  pull_request_target:
+    types:
+      - closed
+    paths:
+      - 'CHANGELOG.md'
 
 permissions:
   contents: write # to create releases
 
 jobs:
   draft_release:
-    if: startsWith(github.event.head_commit.message, 'chore(release):')
+    if: >
+      startsWith(github.event.pull_request.title, 'chore(release):')
+      && github.event.pull_request.merged == true"
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -19,6 +23,7 @@ jobs:
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 0 # we need the tags and the commit history for the gh release create command
+          ref: ${{ github.event.pull_request.base.ref }}
 
       - name: Extract release version
         run: |
@@ -28,13 +33,13 @@ jobs:
           echo "PREVIOUS_VERSION=$PREVIOUS_VERSION" >> $GITHUB_ENV
 
       - name: Release Args - Prerelease
-        if: contains(github.event.head_commit.message, '-')
+        if: contains(github.event.pull_request.title, '-')
         run: |
           RELEASE_ARGS="--prerelease"
           echo "RELEASE_ARGS=$RELEASE_ARGS" >> $GITHUB_ENV
 
       - name: Release Args - Release
-        if: "!contains(github.event.head_commit.message, '-')"
+        if: "!contains(github.event.pull_request.title, '-')"
         run: |
           RELEASE_ARGS="--latest"
           echo "RELEASE_ARGS=$RELEASE_ARGS" >> $GITHUB_ENV
