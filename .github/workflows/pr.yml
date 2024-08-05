@@ -11,9 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     name: 'Check Code Generation: node-22, ubuntu-latest'
-    permissions:
-      pull-requests: write
+
+    outputs:
+      pr_number: ${{ steps.get_pr_number.outputs.pr_number }}
+
     steps:
+      - name: Set output for PR number
+        id: get_pr_number
+        run: echo "::set-output name=pr_number::${{ github.event.pull_request.number }}"
+
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
