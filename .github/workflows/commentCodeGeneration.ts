@@ -14,9 +14,15 @@ import type { context as ctx, GitHub } from '@actions/github/lib/utils';
 export async function script(
   github: InstanceType<typeof GitHub>,
   context: typeof ctx,
-  pr_number: number,
   isSuccess: boolean
 ): Promise<void> {
+  console.log('context', context);
+  const pr_number = context.payload.pull_request?.number;
+  if (pr_number == null) {
+    console.log('No PR number found in the context');
+    return;
+  }
+
   const { data: comments } = await github.rest.issues.listComments({
     owner: context.repo.owner,
     repo: context.repo.repo,
