@@ -2,7 +2,7 @@
 
 exports[`method > expected and actual methods are equal 1`] = `
 [
-  "complexArrayParameter",
+  "complexArrayParameter2",
   "defaultBooleanParamMethod",
   "functionParamMethod",
   "literalUnionParamMethod",
