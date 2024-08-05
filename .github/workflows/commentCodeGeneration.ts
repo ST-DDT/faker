@@ -8,43 +8,59 @@ import type { context as ctx, GitHub } from '@actions/github/lib/utils';
  *
  * @param github A pre-authenticated octokit/rest.js client with pagination plugins
  * @param context An object containing the context of the workflow run.
- * @param pr_number The number of the pull request to comment on
- * @param isSuccess A boolean indicating whether the workflow was successful
  */
 export async function script(
   github: InstanceType<typeof GitHub>,
-  context: typeof ctx,
-  pr_number: number,
-  isSuccess: boolean
+  context: typeof ctx
 ): Promise<void> {
+  const repoArgs = { owner: context.repo.owner, repo: context.repo.repo };
+
+  // Identify the PR that triggered the workflow
+  const head_branch: string = context.payload.workflow_run.head_branch;
+  const { data: prs } = await github.rest.pulls.list({
+    ...repoArgs,
+    state: 'open',
+    head: head_branch,
+  });
+
+  if (prs.length === 0) {
+    console.log(`No PRs found for branch ${head_branch}`);
+    return;
+  }
+
+  const pr_number = prs[0].number;
+
+  // Check if the PR already has a comment from the bot
+
   const { data: comments } = await github.rest.issues.listComments({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
+    ...repoArgs,
     issue_number: pr_number,
   });
 
-  const body = `Uncommitted changes were detected after runnning <code>generate:*</code> commands.\nPlease run <code>pnpm run preflight</code> to generate/update the related files, and commit them.`;
+  const body = `Uncommitted changes were detected after running <code>generate:*</code> commands.\nPlease run <code>pnpm run preflight</code> to generate/update the related files, and commit them.`;
 
   const botComment = comments.find(
     (comment) => comment.user?.type === 'Bot' && comment.body?.includes(body)
   );
 
-  if (isSuccess) {
-    if (!botComment) return;
-    await github.rest.issues.deleteComment({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      comment_id: botComment.id,
-    });
-    return;
-  }
+  const isSuccess = context.payload.workflow_run.conclusion === 'success';
 
-  if (!botComment) {
-    await github.rest.issues.createComment({
-      issue_number: pr_number,
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      body,
-    });
+  if (isSuccess) {
+    // Delete the bot comment if present
+    if (botComment != null) {
+      await github.rest.issues.deleteComment({
+        ...repoArgs,
+        comment_id: botComment.id,
+      });
+    }
+  } else {
+    // Create the comment if missing
+    if (botComment == null) {
+      await github.rest.issues.createComment({
+        ...repoArgs,
+        issue_number: pr_number,
+        body,
+      });
+    }
   }
 }
