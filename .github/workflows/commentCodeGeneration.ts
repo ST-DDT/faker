@@ -7,18 +7,20 @@ import type { context as ctx, GitHub } from '@actions/github/lib/utils';
  * https://github.com/actions/github-script
  *
  * @param github A pre-authenticated octokit/rest.js client with pagination plugins
- * @param context An object containing the context of the workflow run
+ * @param context An object containing the context of the workflow run.
+ * @param pr_number The number of the pull request to comment on
  * @param isSuccess A boolean indicating whether the workflow was successful
  */
 export async function script(
   github: InstanceType<typeof GitHub>,
   context: typeof ctx,
+  pr_number: number,
   isSuccess: boolean
 ): Promise<void> {
   const { data: comments } = await github.rest.issues.listComments({
     owner: context.repo.owner,
     repo: context.repo.repo,
-    issue_number: context.issue.number,
+    issue_number: pr_number,
   });
 
   const body = `Uncommitted changes were detected after runnning <code>generate:*</code> commands.\nPlease run <code>pnpm run preflight</code> to generate/update the related files, and commit them.`;
@@ -39,7 +41,7 @@ export async function script(
 
   if (!botComment) {
     await github.rest.issues.createComment({
-      issue_number: context.issue.number,
+      issue_number: pr_number,
       owner: context.repo.owner,
       repo: context.repo.repo,
       body,

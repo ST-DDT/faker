@@ -42,4 +42,4 @@ jobs:
         with:
           script: |
             const { script } = require('${{ github.workspace }}/.github/workflows/commentCodeGeneration.cjs')
-            await script(github, context, ${{ github.event.workflow_run.conclusion == 'success' }})
+            await script(github, context, ${{ github.event.workflow_run.pull_requests[0].number }}, ${{ github.event.workflow_run.conclusion == 'success' }})
