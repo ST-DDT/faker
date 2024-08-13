@@ -15,6 +15,8 @@ export async function script(
 ): Promise<void> {
   const repoArgs = { owner: context.repo.owner, repo: context.repo.repo };
 
+  console.log('Issue', context.issue);
+
   // Identify the PR that triggered the workflow
   const head_branch: string = context.payload.workflow_run.head_branch;
   const { data: prs } = await github.rest.pulls.list({
