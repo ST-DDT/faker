@@ -3,14 +3,18 @@ name: PR
 on:
   pull_request:
 
-permissions:
-  contents: read # to fetch code (actions/checkout)
+permissions: {} # Permissions per job
 
 jobs:
   check-code-generation:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     name: 'Check Code Generation: node-22, ubuntu-latest'
+    permissions:
+      contents: read # to fetch code (actions/checkout)
+    outputs:
+      generate: ${{ steps.generate.outcome }}
+      diff: ${{ steps.diff.outcome }}
 
     steps:
       - name: Checkout
@@ -54,3 +58,58 @@ jobs:
       - name: Status
         if: ${{ steps.generate.outcome == 'failure' || steps.diff.outcome == 'failure' }}
         run: exit 1
+
+  write-comment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    name: 'Comment Code Generation'
+    permissions:
+      pull-requests: write # to write the comment
+    needs: check-code-generation
+    if: ${{ always() }}
+
+    steps:
+      - name: Write comment
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const repoArgs = { owner: context.repo.owner, repo: context.repo.repo };
+            const issue_number = context.issue.number;
+
+            // Check if the PR already has a comment from the bot
+            const { data: comments } = await github.rest.issues.listComments({
+              ...repoArgs,
+              issue_number,
+            });
+
+            const body = `GitHub Actions has found some problems running the preflight checks.
+            Please make sure to:
+            - run \`pnpm run preflight\` locally
+            - fix all issues until the command completes without errors
+            - commit and push the changes
+            `;
+
+            const botComment = comments.find(
+              (comment) => comment.user?.type === 'Bot' && comment.body?.includes(body)
+            );
+
+            const isSuccess = ${{ needs.check-code-generation.outputs.generate == 'success' && needs.check-code-generation.outputs.diff == 'success' }};
+            if (isSuccess) {
+              // Delete the bot comment if present
+              if (botComment != null) {
+                await github.rest.issues.deleteComment({
+                  ...repoArgs,
+                  comment_id: botComment.id,
+                });
+              }
+            } else {
+              // Create the comment if missing
+              if (botComment == null) {
+                await github.rest.issues.createComment({
+                  ...repoArgs,
+                  issue_number,
+                  body,
+                });
+              }
+            }
