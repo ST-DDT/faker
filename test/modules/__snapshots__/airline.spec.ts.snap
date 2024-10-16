@@ -11,7 +11,7 @@ exports[`airline > 42 > airline 1`] = `
 
 exports[`airline > 42 > airplane 1`] = `
 {
-  "iataTypeCode": "739",
+  "iataTypeCode": "739-Error",
   "name": "Boeing 737-900",
 }
 `;
