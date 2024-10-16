@@ -11,6 +11,7 @@ jobs:
     timeout-minutes: 10
     name: 'Check Code Generation: node-22, ubuntu-latest'
     permissions:
+      # Do not add any additional permissions here, as these can be used by third-party contributors
       contents: read # to fetch code (actions/checkout)
     outputs:
       generate: ${{ steps.generate.outcome }}
@@ -21,6 +22,8 @@ jobs:
         uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
