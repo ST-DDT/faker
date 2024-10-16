@@ -1,7 +1,7 @@
 name: PR
 
 on:
-  pull_request:
+  pull_request_target:
 
 permissions: {} # Permissions per job
 
@@ -94,8 +94,9 @@ jobs:
               (comment) => comment.user?.type === 'Bot' && comment.body?.includes(body)
             );
 
-            const isSuccess = ${{ needs.check-code-generation.outputs.generate == 'success' && needs.check-code-generation.outputs.diff == 'success' }};
-            if (isSuccess) {
+            const generateSuccess = ${{ needs.check-code-generation.outputs.generate == 'success' }};
+            const diffSuccess = ${{ needs.check-code-generation.outputs.diff == 'success' }};
+            if (generateSuccess && diffSuccess) {
               // Delete the bot comment if present
               if (botComment != null) {
                 await github.rest.issues.deleteComment({
