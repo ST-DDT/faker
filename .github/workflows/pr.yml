@@ -1,7 +1,7 @@
 name: PR
 
 on:
-  pull_request:
+  pull_request_target:
 
 permissions: {} # Permissions per job
 
@@ -72,7 +72,6 @@ jobs:
       - name: Write comment
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const repoArgs = { owner: context.repo.owner, repo: context.repo.repo };
             const issue_number = context.issue.number;
@@ -94,8 +93,9 @@ jobs:
               (comment) => comment.user?.type === 'Bot' && comment.body?.includes(body)
             );
 
-            const isSuccess = ${{ needs.check-code-generation.outputs.generate == 'success' && needs.check-code-generation.outputs.diff == 'success' }};
-            if (isSuccess) {
+            const generateSuccess = ${{ needs.check-code-generation.outputs.generate == 'success' }};
+            const diffSuccess = ${{ needs.check-code-generation.outputs.diff == 'success' }};
+            if (generateSuccess && diffSuccess) {
               // Delete the bot comment if present
               if (botComment != null) {
                 await github.rest.issues.deleteComment({
